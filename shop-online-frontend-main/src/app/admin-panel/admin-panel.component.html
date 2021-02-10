@@ -1,0 +1,155 @@
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<link href="https://unpkg.com/@angular/material/prebuilt-themes/indigo-pink.css" rel="stylesheet">
+<!doctype html>
+<div class="simple-login-container" *ngIf="showPanel === false">
+  <h2 style="color: darkgreen">Panel administratora</h2>
+  <div class="row">
+    <div class="col-md-12 form-group">
+      <input type="text" class="form-control" placeholder="Nazwa użytkownika" [(ngModel)]="username">
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12 form-group">
+      <input type="password" placeholder="Wpisz hasło" class="form-control" [(ngModel)]="password">
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12 form-group">
+      <button type="submit" style="background-color: #0c7209" class="btn btn-block btn-login" (click)="authenticationAdmin()">Weryfikuj</button>
+    <button class="btn btn-block btn-login" type="submit" style="background-color: #5a7259" (click)="backToStore()">Wróć do listy produktów</button>
+    </div>
+  </div>
+  <div *ngIf="errorLogin" class="col-md-12 form-group">
+    <b style="color: darkred">Nieprawidłowe dane logowania!!!</b>
+  </div>
+
+</div>
+
+
+<div *ngIf="showPanel === true">
+  <div class="example-container">
+    <div>
+
+      <div class="example-button-row" style="width: 50%">
+        <button mat-flat-button style="background-color: #52C029" (click)="addProduct()"><b style="color: white">Dodaj
+          produkt</b></button>
+        <button mat-flat-button style="background-color: #52C029" (click)="showProducts()"><b style="color: white">Wyświetl
+          produkty</b></button>
+        <button mat-flat-button style="background-color: #52c029" (click)="backToStore()"><b style="color: white">Powrót do sklepu</b>
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  <div *ngIf="addProductFlag">
+      <br>
+      <!--    ngIf="addProductFlag && authentication"-->
+      <div>
+      <div id="exCenter">
+        <div id="exContent">
+          <div id="exLeftColumn">
+            <mat-card style="background-color: white">
+              <div class="form" style="align-items: center">
+                <form
+                  [formGroup]="productForm" (ngSubmit)="saveProduct()"
+                >`
+                  <h5 style="color: darkgreen">Dodawanie produktu</h5>
+                  <div class="form-group">
+                    <input type="text" required placeholder="Nazwa produktu" class="form-control col-md-6"
+                           formControlName="name" [ngClass]="{ 'is-invalid': submitted && f.name.errors }"/>
+                    <div *ngIf="submitted && f.name.errors" style="color: darkred">
+                      <div *ngIf="f.name.errors.required">Pole obowiązkowe!!!</div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <input type="text" required placeholder="Cena" class="form-control col-md-6"
+                           formControlName="price" [ngClass]="{ 'is-invalid': submitted && f.price.errors }"/>
+                    <div *ngIf="submitted && f.price.errors" style="color: darkred">
+                      <div *ngIf="f.price.errors.required">Pole obowiązkowe!!!</div>
+                      <div *ngIf="f.price.errors.pattern">Cena nie jest w poprawnym formacie!!! Maksymalnie dwa miejsca po przecinku np. 25,17</div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <input type="text" required placeholder="Ilość w magazynie" class="form-control col-md-6"
+                           formControlName="stock" [ngClass]="{ 'is-invalid': submitted && f.stock.errors }"/>
+                    <div *ngIf="submitted && f.stock.errors" style="color: darkred">
+                      <div *ngIf="f.stock.errors.required">Pole obowiązkowe!!!</div>
+                      <div *ngIf="f.stock.errors.pattern">Ilość podajemy w liczbach całkowitych!!!</div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label>
+                  <textarea required placeholder="Opis" class="form-control" rows="10" cols="70"
+                            formControlName="description" [ngClass]="{ 'is-invalid': submitted && f.stock.errors }"></textarea>
+                      <div *ngIf="submitted && f.description.errors" style="color: darkred">
+                        <div *ngIf="f.description.errors.required">Pole obowiązkowe!!!</div>
+                      </div>
+                    </label>
+                  </div>
+                  <div class="form-control">
+                    Zdjęcie produktu:
+                    <input type="file" formControlName="file" name="profile" accept="image/x-png,image/gif,image/jpeg" (change)="onFileSelect($event)"
+                           [ngClass]="{ 'is-invalid': submitted && f.file.errors }"/>
+                    <div *ngIf="submitted && f.file.errors" style="color: darkred">
+                      <div *ngIf="f.file.errors.required">Pole obowiązkowe!!!</div>
+                    </div>
+                  </div>
+                  <br>
+                  <button class="btn btn-success" style="background-color: #348b51"><i style="color: white; font-style: normal">Zapisz produkt w systemie</i></button>
+                  <div class="alert alert-warning" *ngIf="isSignUpFailed">
+                    Uwaga!!!<br />{{ errorMessage }}
+                  </div>
+                </form>
+
+              </div>
+            </mat-card>
+          </div>
+          <div id="exRightColumn">
+            <mat-card>
+              <p style="color: darkgreen">Statystyki odnośnie sklepu internetowego:</p>
+              <b style="color: #4d73c3">Liczba sprzedanych produktów: </b> <b style="color: #093908">{{statistics.countSaleProduct}} sztuk/i </b><br>
+              <b style="color: #4d73c3">Liczba zrealizowanych zamówień: </b><b style="color: #093908"> {{statistics.countOrders}}</b> <br>
+              <b style="color: #4d73c3">Liczba produktów aktualnie dostępna: </b> <b style="color: #093908">{{statistics.countAvailableProduct}}</b><br>
+              <b style="color: #4d73c3">Wartość wszystkich dostępnych produktów: </b> <b style="color: #093908">{{statistics.totalAvailableProduct | number:'.2-2':'pl'}} PLN</b><br>
+            </mat-card>
+          </div>
+          <div class="exClear"></div>
+        </div>
+      </div>
+
+
+
+      <br>
+
+    </div>
+  </div>
+
+  <div *ngIf="showProductFlag">
+  <app-list-product></app-list-product>
+  </div>
+
+</div>
+
+
+
+
+<ng-template #informModal let-modal>
+  <div class="modal-header" style="background-color: #07c36e">
+    <h4 class="modal-title" id="deactivateModal" style="color: white"><i class="material-icons"></i>Informacja</h4>
+
+  </div>
+  <div class="modal-body" style="
+      width: 400px;
+      height: 100px">
+
+    <b style="color: #0c7209">Produkt o nazwie: {{newProduct.name}} został pomyślnie dodany do systemu.</b>
+  </div>
+  <mat-dialog-actions style="align-content: center">
+    <button class="btn btn-success" mat-button [mat-dialog-close]="true">OK</button>
+  </mat-dialog-actions>
+
+
+</ng-template>

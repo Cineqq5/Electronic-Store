@@ -1,0 +1,23 @@
+#exCenter{
+  width:100%;
+  margin:auto;
+}
+#exHeader,#exContent,#exFooter{
+  background-color:white;
+  border:solid 1px #f1f1f1;
+  margin-bottom:2px;
+}
+#exLeftColumn{
+  float:left;
+  width:50%;
+  background-color: white;
+}
+#exRightColumn{
+  float:right;
+  width:50%;
+  background-color: white;
+}
+.exClear{
+  clear:both;
+  line-height:0px;
+}

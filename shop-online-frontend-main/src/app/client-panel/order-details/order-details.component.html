@@ -1,0 +1,164 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+
+<mat-card style="background-color: white; width: 100%" >
+  <div id="exCenter">
+    <div id="exContent">
+      <div id="exLeftColumn">
+        <mat-card style="background-color: white; width: 100%">
+          <div class="form" style="position: center">
+            <form
+              [formGroup]="clientForm" (ngSubmit)="saveOrder()"
+            >
+              <h5 style="color: darkgreen">Dane zamawiającego:</h5>
+              <div class="form-group">
+                <input type="text" required placeholder="Imię" class="form-control col-md-12"
+                       formControlName="name" [ngClass]="{ 'is-invalid': submitted && f.name.errors }"/>
+                <div *ngIf="submitted && f.name.errors" style="color: darkred">
+                  <div *ngIf="f.name.errors.required">Pole obowiązkowe!!!</div>
+                </div>
+              </div>
+              <div class="form-group">
+                <input type="text" required placeholder="Nazwisko" class="form-control col-md-12"
+                       formControlName="surname" [ngClass]="{ 'is-invalid': submitted && f.surname.errors }"/>
+                <div *ngIf="submitted && f.surname.errors" style="color: darkred">
+                  <div *ngIf="f.surname.errors.required">Pole obowiązkowe!!!</div>
+                </div>
+              </div>
+              <div class="form-group">
+                <input type="text" required placeholder="Ulica i nr domu" class="form-control col-md-12"
+                       formControlName="city" [ngClass]="{ 'is-invalid': submitted && f.city.errors }"/>
+                <div *ngIf="submitted && f.city.errors" style="color: darkred">
+                  <div *ngIf="f.city.errors.required">Pole obowiązkowe!!!</div>
+                </div>
+              </div>
+              <div class="form-group">
+                <input type="text" required placeholder="Kod pocztowy 00-000" class="form-control col-md-12"
+                       formControlName="postalCode" [ngClass]="{ 'is-invalid': submitted && f.postalCode.errors }"/>
+                <div *ngIf="submitted && f.postalCode.errors" style="color: darkred">
+                  <div *ngIf="f.postalCode.errors.required">Pole obowiązkowe!!!</div>
+                  <div *ngIf="f.postalCode.errors.pattern">Niepoprawny format!!!</div>
+                </div>
+              </div>
+              <div class="form-group">
+                <input type="text" required placeholder="Miejscowość" class="form-control col-md-12"
+                       formControlName="town" [ngClass]="{ 'is-invalid': submitted && f.town.errors }"/>
+                <div *ngIf="submitted && f.town.errors" style="color: darkred">
+                  <div *ngIf="f.town.errors.required">Pole obowiązkowe!!!</div>
+                </div>
+              </div>
+              <div class="form-group">
+                <input type="text" required placeholder="Nr telefonu" class="form-control col-md-12"
+                       formControlName="phone" [ngClass]="{ 'is-invalid': submitted && f.phone.errors }"/>
+                <div *ngIf="submitted && f.phone.errors" style="color: darkred">
+                  <div *ngIf="f.phone.errors.required">Pole obowiązkowe!!!</div>
+                  <div *ngIf="f.phone.errors.pattern">Nr telefonu zawiera 9 znaków!!!</div>
+                </div>
+              </div>
+              <br>
+              <button class="btn btn-success" style="background-color: #348b51"><i style="color: white; font-style: normal">Zamawiam z obowiązkiem zapłaty</i></button>
+
+              <div class="alert alert-warning" *ngIf="isSignUpFailed">
+                Uwaga!!!<br />{{ errorMessage }}
+              </div>
+            </form>
+            <button class="btn btn-success" style="background-color: #348b7c" (click)="backToOrder()"><i style="color: white; font-style: normal">Wróć do zamówienia</i></button>
+          </div>
+        </mat-card>
+
+
+
+      </div>
+      <div id="exRightColumn">
+        <div class="card-body">
+          <h5 class="mb-3">Cena łącznie:</h5>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 pb-0">
+              Razem:
+              <span>{{total| number:'.2-2':'pl'}} PLN</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+              Dostawa:
+              <span>Gratis</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 mb-3">
+              <div>
+                <strong>Łącznie:</strong>
+                <strong>
+                  <p class="mb-0">(włączając VAT)</p>
+                </strong>
+              </div>
+              <span><strong>{{total | number:'.2-2':'pl'}} PLN</strong></span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 mb-3">
+              <div>
+                <div>
+                  <tr *ngFor="let product of uniqueProduct">
+                    <!-- List group-->
+                    <ul class="list-group shadow" style="float: left">
+                      <!-- list group item-->
+                      <li class="list-group-item">
+                        <!-- Custom content-->
+                        <div class="media align-items-lg-center flex-column flex-lg-row p-3">
+                          <div class="media-body order-2 order-lg-1">
+                            <h5 class="mt-0 font-weight-bold mb-2">{{product.name}}</h5>
+                            <div class="d-flex align-items-center justify-content-between mt-1">
+                              <h6 class="font-weight-bold my-2" style="color: gray">{{product.price}} złotych</h6><br>
+                         </div><br>
+                            <h6 class="font-weight-bold my-2" style="color: darkgreen">Kupiłeś: {{product.quantity}} sztuk/i</h6>
+                            <div class="container">
+                            </div>
+
+
+                          </div><img [src]="transform(product.imageBase64)" alt="Generic placeholder image" width="200" class="ml-lg-5 order-1 order-lg-2">
+                        </div> <!-- End -->
+                      </li> <!-- End -->
+
+                    </ul>
+                  </tr>
+                </div>
+              </div>
+            </li>
+
+          </ul>
+
+        </div>
+
+      </div>
+      <div class="exClear"></div>
+    </div>
+  </div>
+</mat-card>
+
+
+
+<ng-template #informModal let-modal>
+  <div class="modal-header" style="background-color: #07c36e">
+    <h4 class="modal-title" id="deactivateModal" style="color: white"><i class="material-icons"></i>Informacja</h4>
+
+  </div>
+  <div class="modal-body" style="
+      width: 400px;
+      height: 100px">
+    <b style="color: #093908">Zamówienie zostało zarejestrowane!!!</b>
+    <button (click)="pay()" class="btn" style="background-color: #07c36e; color: white"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-credit-card" viewBox="0 0 16 16">
+      <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4zm2-1a1 1 0 0 0-1 1v1h14V4a1 1 0 0 0-1-1H2zm13 4H1v5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V7z"/>
+      <path d="M2 10a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-1z"/>
+    </svg>Przejdź do płatności</button>
+  </div>
+
+</ng-template>
+<ng-template #errorModal let-modal>
+  <div class="modal-header" style="background-color: #e10000">
+    <h4 class="modal-title" id="errorModal" style="color: white"><i class="material-icons"></i>Informacja</h4>
+
+  </div>
+  <div class="modal-body" style="
+      width: 400px;
+      height: 200px">
+    <b style="color: #780000">Nie udało się zrealizować zgłoszenia. Jeden lub wiele produktów nie jest już dostępna w takiej ilości.</b>
+    <br>
+    <b style="color: #ba0000">Pamiętaj dodanie produktu do koszyka nie równa się jego zarezerwowaniu!!!</b>
+    <button class="btn" style="background-color: #ff411d; color: white" (click)="backToList()"> Przejdź do listy produktów</button>
+  </div>
+</ng-template>

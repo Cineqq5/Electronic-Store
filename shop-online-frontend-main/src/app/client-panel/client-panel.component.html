@@ -1,0 +1,80 @@
+<div class="container py-5">
+  <div class="row text-center text-white mb-5">
+    <div class="col-lg-7 mx-auto">
+      <h1 class="display-4" style="color: #093908">Lista Produktów</h1>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-lg-8 mx-auto">
+      <tr *ngFor="let product of allProduct">
+      <!-- List group-->
+      <ul class="list-group shadow">
+        <!-- list group item-->
+        <li class="list-group-item">
+          <!-- Custom content-->
+          <div class="media align-items-lg-center flex-column flex-lg-row p-3">
+            <div class="media-body order-2 order-lg-1">
+              <h5 class="mt-0 font-weight-bold mb-2">{{product.name}}</h5>
+              <p class="font-italic text-muted mb-0 small">{{product.description}}</p>
+              <div class="d-flex align-items-center justify-content-between mt-1">
+                <h6 class="font-weight-bold my-2">{{product.price}} złotych</h6>
+                <h6 *ngIf="product.stock>0" class="font-weight-bold my-2">{{product.stock}} sztuk</h6>
+                <h6 *ngIf="product.stock===0" class="font-weight-bold my-2" style="color: red">Produkt niedostępny</h6>
+                <form
+                  [formGroup]="productForm" (ngSubmit)="addToBasket(product)"
+                >
+                <input [readOnly]="product.stock===0" class="form-control" style="width: 70px" placeholder="Sztuk" formControlName="quantity" [ngClass]="{ 'is-invalid': submitted && f.quantity.errors}">
+                <div *ngIf="submitted && f.quantity.errors" style="color: darkred; font-size: 12px">
+                  <div *ngIf="f.quantity.errors.required">Pole obowiązkowe!!!</div>
+                  <div *ngIf="f.quantity.errors.pattern">Niepoprawna wartość!!!</div>
+                  <div *ngIf="f.quantity.errors.serverError">Niepoprawna wartość!!!</div>
+                </div>
+
+                <button type="button" [disabled]="product.stock===0" class="btn btn-outline-success" (click)="addToBasket(product)">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart" viewBox="0 0 16 16">
+                    <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5zM3.102 4l1.313 7h8.17l1.313-7H3.102zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"></path>
+                  </svg>
+                 Dodaj do koszyka
+                </button>
+                </form>
+                <ul class="list-inline small">
+                  <li class="list-inline-item m-0"><i class="fa fa-star text-success"></i></li>
+                  <li class="list-inline-item m-0"><i class="fa fa-star text-success"></i></li>
+                  <li class="list-inline-item m-0"><i class="fa fa-star text-success"></i></li>
+                  <li class="list-inline-item m-0"><i class="fa fa-star text-success"></i></li>
+                  <li class="list-inline-item m-0"><i class="fa fa-star-o text-gray"></i></li>
+                </ul>
+              </div>
+            </div><img [src]="transform(product.imageBase64)" alt="Generic placeholder image" width="200" class="ml-lg-5 order-1 order-lg-2">
+          </div> <!-- End -->
+        </li> <!-- End -->
+
+      </ul>
+</tr>
+    </div>
+  </div>
+
+</div>
+
+
+<ng-template #basketModal let-modal>
+  <div class="modal-header" style="background-color: #07c36e">
+    <h4 class="modal-title" id="deactivateModal" style="color: white"><i class="material-icons"></i>Informacja</h4>
+
+  </div>
+  <div class="modal-body" style="
+      width: 400px;
+      height: 150px">
+    <b style="color: #093908">Produkt został dodany do koszyka, o ile nie znajdują się w nim już wszystkie produkty tego typu.</b><br>
+    <button class="btn" style="background-color: #07c36e; color: white" (click)="showBasket()"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-basket3" viewBox="0 0 16 16">
+    <path d="M5.757 1.071a.5.5 0 0 1 .172.686L3.383 6h9.234L10.07 1.757a.5.5 0 1 1 .858-.514L13.783 6H15.5a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5H.5a.5.5 0 0 1-.5-.5v-1A.5.5 0 0 1 .5 6h1.717L5.07 1.243a.5.5 0 0 1 .686-.172zM3.394 15l-1.48-6h-.97l1.525 6.426a.75.75 0 0 0 .729.574h9.606a.75.75 0 0 0 .73-.574L15.056 9h-.972l-1.479 6h-9.21z"/>
+    </svg> Przejdź do koszyka</button>
+    <button class="btn" style="background-color: #12c00c; color: white" [mat-dialog-close]="true"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-basket" viewBox="0 0 16 16">
+      <path d="M5.757 1.071a.5.5 0 0 1 .172.686L3.383 6h9.234L10.07 1.757a.5.5 0 1 1 .858-.514L13.783 6H15a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1v4.5a2.5 2.5 0 0 1-2.5 2.5h-9A2.5 2.5 0 0 1 1 13.5V9a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h1.217L5.07 1.243a.5.5 0 0 1 .686-.172zM2 9v4.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V9H2zM1 7v1h14V7H1zm3 3a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0v-3A.5.5 0 0 1 4 10zm2 0a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0v-3A.5.5 0 0 1 6 10zm2 0a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0v-3A.5.5 0 0 1 8 10zm2 0a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0v-3a.5.5 0 0 1 .5-.5zm2 0a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0v-3a.5.5 0 0 1 .5-.5z"/>
+    </svg> Kontynuuj zakupy</button>
+  </div>
+</ng-template>
+
+
+

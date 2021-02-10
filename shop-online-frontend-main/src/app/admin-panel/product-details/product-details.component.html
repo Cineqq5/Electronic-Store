@@ -1,0 +1,88 @@
+<mat-card style="background-color: white">
+  <div id="exCenter">
+    <div id="exContent">
+      <div id="exLeftColumn">
+        <h2 style="color: #0c7209"><b>{{productDetails.name}}</b></h2>
+        <b>ID produktu: </b> {{productDetails.id}}<br>
+        <b>Cena: </b> {{productDetails.price}} złotych<br>
+        <b>Ilość na stanie: </b> {{productDetails.stock}}<br>
+        <b>Opis:</b><br>
+        <textarea style="width: 95%; height: 50%; background-color: #eaeaea; color: #093908" class="form-control" [textContent]="productDetails.description"
+                  readonly></textarea><br>
+      </div>
+      <div id="exRightColumn">
+        <img style="border-color: #093908; width: 554px; height: 524px" [src]="transform()"><br><br><br>
+        <div style="position: center">
+          <button class="btn" style="background-color: #093908; border-color: #093908; color: white" (click)="backToList()">Wróć do listy</button><br><br>
+          <button class="btn" style="background-color: #6dc026; border-color: #6dc026; color: white" (click)="showEditDialog(editModal)">Edytuj dane dot. produktu</button>
+        </div>
+      </div>
+      <div class="exClear"></div>
+    </div>
+  </div>
+</mat-card>
+
+
+<ng-template #editModal let-modal>
+  <div class="modal-header" style="background-color: #07c36e">
+    <h4 class="modal-title" id="deactivateModal" style="color: white"><i class="material-icons"></i>Edytuj dane dot. produktu</h4>
+
+  </div>
+  <div class="modal-body" style="
+      width: 600px;
+      height: 500px">
+    <mat-card style="background-color: white; width: 100%">
+      <div class="form" style="align-items: center">
+        <form
+          [formGroup]="productForm" (ngSubmit)="saveChangesProduct()"
+        >
+          <div class="form-group">
+            <input type="text" required placeholder="Nazwa produktu" class="form-control col-md-6"
+                   formControlName="name" [ngClass]="{ 'is-invalid': submitted && f.name.errors }"/>
+            <div *ngIf="submitted && f.name.errors" style="color: darkred">
+              <div *ngIf="f.name.errors.required">Pole obowiązkowe!!!</div>
+            </div>
+          </div>
+          <div class="form-group">
+            <input type="text" required placeholder="Cena" class="form-control col-md-6"
+                   formControlName="price" [ngClass]="{ 'is-invalid': submitted && f.price.errors }"/>
+            <div *ngIf="submitted && f.price.errors" style="color: darkred">
+              <div *ngIf="f.price.errors.required">Pole obowiązkowe!!!</div>
+              <div *ngIf="f.price.errors.pattern">Cena nie jest w poprawnym formacie!!! Maksymalnie dwa miejsca po przecinku np. 25,17</div>
+            </div>
+          </div>
+          <div class="form-group">
+            <input type="text" required placeholder="Ilość w magazynie" class="form-control col-md-6"
+                   formControlName="stock" [ngClass]="{ 'is-invalid': submitted && f.stock.errors }"/>
+            <div *ngIf="submitted && f.stock.errors" style="color: darkred">
+              <div *ngIf="f.stock.errors.required">Pole obowiązkowe!!!</div>
+              <div *ngIf="f.stock.errors.pattern">Ilość podajemy w liczbach całkowitych!!!</div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>
+                  <textarea required placeholder="Opis" class="form-control" rows="10" cols="70"
+                            formControlName="description" [ngClass]="{ 'is-invalid': submitted && f.stock.errors }"></textarea>
+              <div *ngIf="submitted && f.description.errors" style="color: darkred">
+                <div *ngIf="f.description.errors.required">Pole obowiązkowe!!!</div>
+              </div>
+            </label>
+          </div>
+          <div class="form-control">
+            Zdjęcie produktu: <p style="color: red">Uwaga! Nie wybierając zdjęcia zostaje oryginalne!!!</p>
+            <input type="file" name="profile" accept="image/x-png,image/gif,image/jpeg" (change)="onFileSelect($event)"
+                   />
+          </div>
+          <br>
+          <button class="btn btn-success" style="background-color: #348b51"><i style="color: white; font-style: normal">Zapisz produkt w systemie</i></button>
+          <button class="btn btn-login" style="background-color: #efefef" mat-dialog-close><i style="color: #8c8c8c; font-style: normal">Anuluj</i></button>
+          <div class="alert alert-warning" *ngIf="isSignUpFailed">
+            Uwaga!!!<br />{{ errorMessage }}
+          </div>
+        </form>
+
+      </div>
+    </mat-card>
+
+  </div>
+</ng-template>
